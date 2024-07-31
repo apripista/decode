@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Function to print a letter in dot-based pattern
+# print a letter in dot-based pattern
 print_letter() {
     local letter="$1"
 
@@ -21,7 +21,7 @@ print_letter() {
         n) echo -e "*   *\n**  *\n* * *\n*  **\n*   *" ;;
         o) echo -e " *** \n*   *\n*   *\n*   *\n *** " ;;
         p) echo -e "**** \n*   *\n**** \n*    \n*    " ;;
-        q) echo -e " *** \n*   *\n*   *\n*  **\n *** \n    *" ;;
+        q) echo -e " *** \n*   *\n*   *\n*  **\n *** \n *" ;;
         r) echo -e "**** \n*   *\n**** \n* *  \n*  * " ;;
         s) echo -e " *** \n*    \n *** \n    *\n *** " ;;
         t) echo -e "*****\n  *  \n  *  \n  *  \n  *  " ;;
@@ -35,7 +35,7 @@ print_letter() {
     esac
 }
 
-# Function to print a word in dot-based pattern
+# print a word in dot-based pattern
 print_dotted_word() {
     local word="$1"
     local i
@@ -43,14 +43,15 @@ print_dotted_word() {
     for i in $(seq 1 5); do
         for (( j=0; j<${#word}; j++ )); do
             letter="${word:$j:1}"
-            letter=$(echo "$letter" | tr '[:upper:]' '[:lower:]')  # Convert to lowercase for patterns
+	    # Convert to lowercase for patterns
+            letter=$(echo "$letter" | tr '[:upper:]' '[:lower:]')
             print_letter "$letter" | sed -n "${i}p" | tr '\n' ' '
         done
         echo
     done
 }
 
-# Function to decode from Base64
+# decode from Base64
 decode_base64() {
     if command -v base64 &> /dev/null; then
         echo -n "$1" | base64 -d
@@ -59,7 +60,7 @@ decode_base64() {
     fi
 }
 
-# Function to decode from Base32
+# decode from Base32
 decode_base32() {
     if command -v base32 &> /dev/null; then
         echo -n "$1" | base32 -d
@@ -68,7 +69,7 @@ decode_base32() {
     fi
 }
 
-# Function to decode from Base16 (Hexadecimal)
+# decode from Base16 (Hexadecimal)
 decode_base16() {
     if command -v xxd &> /dev/null; then
         echo -n "$1" | xxd -r -p
@@ -77,17 +78,17 @@ decode_base16() {
     fi
 }
 
-# Function to decode HTML entities
+# decode HTML entities
 decode_html() {
     echo "$1" | sed 's/&amp;/\&/g; s/&lt;/</g; s/&gt;/>/g; s/&quot;/"/g; s/&#39;/'\''/g'
 }
 
-# Function to decode URL-encoded strings
+# decode URL-encoded strings
 decode_url() {
     echo "$1" | python3 -c "import urllib.parse, sys; print(urllib.parse.unquote(sys.stdin.read().strip()))"
 }
 
-# Function to decode Binary encoded strings
+# decode Binary encoded strings
 decode_binary() {
     binary_string=$(echo "$1" | tr -d ' ')
     length=${#binary_string}
@@ -102,12 +103,12 @@ decode_binary() {
     echo -e "$decoded_string"
 }
 
-# Function to decode Octal encoded strings
+# decode Octal encoded strings
 decode_octal() {
     echo "$1" | awk '{for(i=1;i<=NF;i++)printf("%c",strtonum("0"$i));print""}'
 }
 
-# Function to detect encoding type
+# detect encoding type
 detect_encoding() {
     if echo "$1" | grep -qE '^[0-9A-Fa-f]+$'; then
         echo "The string appears to be Base16 (Hexadecimal)."
@@ -148,7 +149,6 @@ echo
 # Print the word in dot-based pattern
 print_dotted_word "InsipiraHub"
 
-# Add an empty line before the prompt
 echo
 
 # Get the string to decode
@@ -161,36 +161,28 @@ encoding_type=$?
 # Display debugging information
 echo "Detected encoding type: $encoding_type"
 
-# Ask user if they want to decode
+# you want to decode? yes/no
 if [ $encoding_type -ne 0 ]; then
     read -p "Do you want to decode it? (yes/no) " decode_choice
     if [ "$decode_choice" == "yes" ]; then
         case $encoding_type in
             1)
-                decoded=$(decode_base16 "$input_string")
-                ;;
+                decoded=$(decode_base16 "$input_string");;
             2)
-                decoded=$(decode_base32 "$input_string")
-                ;;
+                decoded=$(decode_base32 "$input_string");;
             3)
-                decoded=$(decode_base64 "$input_string")
-                ;;
+                decoded=$(decode_base64 "$input_string");;
             4)
-                decoded=$(decode_html "$input_string")
-                ;;
+                decoded=$(decode_html "$input_string");;
             5)
-                decoded=$(decode_url "$input_string")
-                ;;
+                decoded=$(decode_url "$input_string");;
             6)
-                decoded=$(decode_binary "$input_string")
-                ;;
+                decoded=$(decode_binary "$input_string");;
             7)
-                decoded=$(decode_octal "$input_string")
-                ;;
+                decoded=$(decode_octal "$input_string");;
             *)
                 echo "Invalid encoding type detected."
-                exit 1
-                ;;
+                exit 1;;
         esac
 
         if [ -z "$decoded" ]; then
