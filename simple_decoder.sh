@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Function to decode from Base64
+# decode from Base64
 decode_base64() {
     if command -v base64 &> /dev/null; then
         echo -n "$1" | base64 -d
@@ -9,7 +9,7 @@ decode_base64() {
     fi
 }
 
-# Function to decode from Base32
+# decode from Base32
 decode_base32() {
     if command -v base32 &> /dev/null; then
         echo -n "$1" | base32 -d
@@ -18,7 +18,7 @@ decode_base32() {
     fi
 }
 
-# Function to decode from Base16 (Hexadecimal)
+# decode from Base16 (Hexadecimal)
 decode_base16() {
     if command -v xxd &> /dev/null; then
         echo -n "$1" | xxd -r -p
@@ -27,17 +27,17 @@ decode_base16() {
     fi
 }
 
-# Function to decode HTML entities
+# decode HTML entities
 decode_html() {
     echo "$1" | sed 's/&amp;/\&/g; s/&lt;/</g; s/&gt;/>/g; s/&quot;/"/g; s/&#39;/'\''/g'
 }
 
-# Function to decode URL-encoded strings
+# decode URL-encoded strings
 decode_url() {
     echo "$1" | python3 -c "import urllib.parse, sys; print(urllib.parse.unquote(sys.stdin.read().strip()))"
 }
 
-# Function to decode Binary encoded strings
+# decode Binary encoded strings
 decode_binary() {
     binary_string=$(echo "$1" | tr -d ' ')
     length=${#binary_string}
@@ -52,12 +52,12 @@ decode_binary() {
     echo -e "$decoded_string"
 }
 
-# Function to decode Octal encoded strings
+# decode Octal encoded strings
 decode_octal() {
     echo "$1" | awk '{for(i=1;i<=NF;i++)printf("%c",strtonum("0"$i));print""}'
 }
 
-# Function to detect encoding type
+# detect encoding type
 detect_encoding() {
     if echo "$1" | grep -qE '^[0-9A-Fa-f]+$'; then
         echo "The string appears to be Base16 (Hexadecimal)."
@@ -89,11 +89,11 @@ detect_encoding() {
 # Get the string to decode
 read -p "Enter the string to decode: " input_string
 
-# Detect the encoding type
+# detect the encoding type
 detect_encoding "$input_string"
 encoding_type=$?
 
-# Ask user if they want to decode
+# user do you want to decode?
 if [ $encoding_type -ne 0 ]; then
     read -p "Do you want to decode it? (yes/no) " decode_choice
     if [ "$decode_choice" == "yes" ]; then
